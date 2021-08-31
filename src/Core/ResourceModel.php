@@ -42,7 +42,23 @@ class ResourceModel implements ResourceModelInterface
     }
     public function save($model)
     {
-       
+       $arrData = $model->getProperties();
+        $arrKey = [];
+        foreach($arrData as $key=>$value)
+        {
+            array_push($arrKey, $key.' = :'.$key);
+        }
+        $stringModel = implode(', ', $arrKey);
+        if($model->getId() === null)
+        {
+            $sql = "INSERT INTO $this->table SET $stringModel";
+            
+        }else {
+            $sql = "UPDATE $this->table SET $stringModel WHERE $this->id=:id";
+             
+        }
+        $req = Database::getBdd()->prepare($sql);
+        return $req->execute($arrData);
 
     }
 
